@@ -1,0 +1,36 @@
+# Test 1:
+# * Assert that the dynamic text (the lorem ipsum text block) on the page contains a word at least 10 characters in length.
+# * Stretch goal:
+# * Print the longest word on the page.
+
+
+from selenium import webdriver
+import unittest, re
+
+class TextTest(unittest.TestCase):
+    def setUp(self):
+        self.driver = webdriver.Firefox()
+
+    def test_wordLength(self):
+        driver = self.driver
+        driver.get("https://the-internet.herokuapp.com/dynamic_content")
+        textString = driver.find_element_by_css_selector("div.large-10.columns").text
+        listOfWords = re.split('[.\n, ;:?!-]', textString)
+
+        loWord = max(len(word) for word in listOfWords)
+
+        # assert text (the lorem ipsum text block) on the page contains a word at least 10 characters in length
+        self.assertNotEqual(loWord, list(range(10)))
+
+        # print the longest one
+        w = ''
+        for word in listOfWords:
+            if len(word) == loWord:
+                w += (word + ' ')
+        print('The longest word(s) on the page is(are): ' + w)
+
+    def tearDown(self):
+        self.driver.close()
+
+if __name__ == "__main__":
+    unittest.main()
