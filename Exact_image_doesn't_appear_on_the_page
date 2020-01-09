@@ -1,0 +1,39 @@
+# test 2
+# Assert that the "Punisher" image does not appear on the page.
+# Give names to each avatar that can appear on the page and print out each avatars name.
+
+from selenium import webdriver
+import unittest, random
+
+def get_avatar_name_random(max_str_len, min_str_len=2):
+    av_name = ''
+    chars = list('qazxswedcvfrtgbnhyujmkiolp')
+    name_len = random.randrange(min_str_len, max_str_len + 1)
+    for i in range(name_len):
+        av_name += random.choice(chars)
+    return av_name.title()
+
+class ImgTest(unittest.TestCase):
+    def setUp(self):
+        self.driver = webdriver.Firefox()
+
+    def test_punisherImage(self):
+        driver = self.driver
+        driver.get("https://the-internet.herokuapp.com/dynamic_content")
+        images = driver.find_elements_by_xpath("//div[@id='content']//img")
+
+        punisherLink = "https://the-internet.herokuapp.com/img/avatars/Original-Facebook-Geek-Profile-Avatar-5.jpg"
+        avatars = {}
+
+        for image in images:
+            imLink = image.get_attribute('src')
+            self.assertNotEqual(imLink, punisherLink)
+
+            avatars.setdefault(imLink, get_avatar_name_random(8))
+        print('On the page: ' + ', '.join(str(n) for n in list(avatars.values())))
+
+    def tearDown(self):
+        self.driver.close()
+
+if __name__ == "__main__":
+    unittest.main()
